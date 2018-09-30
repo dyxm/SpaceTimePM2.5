@@ -77,7 +77,6 @@ def get_time_steps(df_raw, main_factor, other_factors, max_time_lag, min_corr_co
     time_steps = {}
     max_col = ''
     max_col_len = 0
-    print(min_corr_coeff)
     for oc in all_corr:
         temp = [i for i, x in enumerate(all_corr[oc]) if math.fabs(x) >= min_corr_coeff]
         # temp_len =
@@ -134,8 +133,9 @@ def get_sequence_features(df_seq_data, target_offset, time_step, feature_name):
     seq_data = np.array(df_seq_data)
     if type(time_step) == int:
         time_step = range(1, time_step + 1)
+    # print(len(seq_data) - target_offset)
     new_data = []
-    for i in range(len(seq_data) - target_offset):
+    for i in range(len(seq_data) - target_offset + 1):
         temp_data = []
         for j in time_step:
             if i < j:
@@ -186,7 +186,6 @@ def process_data_for_lstm(df_raw, model_conf):
     X_scaled, X_scaler = min_max_scale(df_raw)
     df_X_scaled = pd.DataFrame(X_scaled, columns=time_steps.keys())
     X_scaled = np.array(process_sequence_features(df_X_scaled, time_steps, model_conf['target_offset']))
-    # print(X_scaled)
 
     # 分割和reshape
     max_time_lag = max([max(time_steps[x]) for x in time_steps])

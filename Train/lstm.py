@@ -55,10 +55,11 @@ def main(conf, is_train=True):
         model.compile(loss='mse', optimizer='RMSprop')
         checkpoint = ModelCheckpoint(weight_path, monitor='val_loss', verbose=1, save_best_only=True, mode='min')
         callbacks_list = [checkpoint]
-        history = model.fit(X_train, y_train, epochs=20, batch_size=24, validation_data=(X_test, y_test), verbose=1,
+        history = model.fit(X_train, y_train, epochs=conf['model_conf']['epochs'],
+                            batch_size=conf['model_conf']['batch_size'], validation_data=(X_test, y_test), verbose=1,
                             callbacks=callbacks_list, shuffle=False)
 
-        evaluate.draw_loss_curve(figure_num='PM2.5', train_loss=history.history['loss'],
+        evaluate.draw_loss_curve(figure_num=conf['model_conf']['target_col'], train_loss=history.history['loss'],
                                  val_loss=history.history['val_loss'])
     else:
         json_string = open(model_path).read()
@@ -82,6 +83,8 @@ if __name__ == '__main__':
     min_corr_coeff = 0.3
     target_offset = 1
     test_split = 0.4
+    epochs = 100
+    batch_size = 1024
     config = {
         'data_conf': {
             'data_path': data_path,
@@ -96,9 +99,11 @@ if __name__ == '__main__':
             'min_corr_coeff': min_corr_coeff,
             'target_offset': target_offset,
             'model_path': model_path,
-            'weight_path': weight_path
+            'weight_path': weight_path,
+            'epochs': epochs,
+            'batch_size': batch_size,
         }
     }
     # data = process_data_for_lstm(df_data, model_config)
-    main(config, is_train=True)
+    # main(config, is_train=True)
     main(config, is_train=False)
